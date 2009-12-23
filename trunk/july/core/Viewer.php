@@ -4,8 +4,7 @@ class Viewer {
     public function __construct($dataProvider) {
         if ($dataProvider instanceof DataProvider) {
             $this->dataProvider = $dataProvider;
-        }
-        else {
+        } else {
             throw new Exception("object is not a effective DataProvider\n");
         }
     }
@@ -18,8 +17,7 @@ class Viewer {
         if ($current !== false) {
             $this->fillData($current);
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }

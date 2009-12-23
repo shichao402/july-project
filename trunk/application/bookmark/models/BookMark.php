@@ -12,10 +12,10 @@ class BookMark {
     }
     public function totalNum() {
         $this->totalNum = $this->db->selectFirst("SELECT FOUND_ROWS() as totalnum",true);
-        return (int) $totalNum['totalnum'];
+        return (int) $this->totalNum['totalnum'];
     }
     public function totalPage($pageLength) {
-        $this->totalPage = ($this->totalNum()/$pageLength) + 1;
+        $this->totalPage = (int) ($this->totalNum()/$pageLength) + 1;
         return $this->totalPage;
     }
     public function num() {
@@ -64,9 +64,9 @@ class BookMark {
         $this->totalPage = (int) ($totalNum/$pageLength)+1;
     }
     public function saveFromForm($input) {
-        $name = $input['name'];
-        $url = urlencode($input['url']);
-        $intro = $input['intro'];
+        $name = 'name';//$input['name'];
+        $url = 'url';//urlencode($input['url']);
+        $intro = 'intro';//$input['intro'];
         if (empty($name) || empty($url)) {
             throw new Exception("name and url can not be empty\n");
         }else {

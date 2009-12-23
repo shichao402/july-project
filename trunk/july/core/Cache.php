@@ -4,8 +4,7 @@ class Cache {
     public function __construct($baseDir) {
         if (!is_dir($baseDir)) {
             throw new Exception("$dir is not an effect Dir\n");
-        }
-        else {
+        } else {
             $this->dir = realpath($baseDir);
         }
     }
@@ -14,8 +13,7 @@ class Cache {
         $value = serialize($value);
         if (strlen((string) $expire) > 10) {
             throw new Exception('exprire time is too big,leave it as default means never expired\n');
-        }
-        else {
+        } else {
             $expire = str_pad($expire, 10, '0', STR_PAD_LEFT);
         }
         $this->touch($file);

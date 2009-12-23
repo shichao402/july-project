@@ -4,7 +4,7 @@ class Controler_bookmark extends Controller {
         $page = empty($_GET['p']) ? 1 : $_GET['p'];
         $cache = new Cache(APP_ROOT.'/cache');
         try {
-            list($bookmarkList,$tagList) = $cache->get('bookmark_tag_list');
+            list($bookmarkList,$tagList) = $cache->get('bookmark_tag_list_'.$page);
         } catch (Exception $e) {
             echo $e->getMessage();
             $bookmark = new BookMark();
@@ -14,8 +14,8 @@ class Controler_bookmark extends Controller {
             if ($bookmarkList->have()) {
                 $tag = new Tag();
                 $tagList = new Viewer(new DataProvider(new DataProvider($tag->tagsInId($bookmark->idArray())), $bookmarkList->id));
+                $cache->set('bookmark_tag_list_'.$page,array($bookmarkList,$tagList),60);
             }
-            $cache->set('bookmark_tag_list',array($bookmarkList,$tagList),60);
         }
 
         if ($bookmarkList->have()) {
@@ -28,7 +28,7 @@ class Controler_bookmark extends Controller {
             $this->loadView('list');
             $this->loadView('add');
         }else {
-            $this->loadView('list');
+            $this->loadView('empty');
             $this->loadView('add');
         }
         $this->view();

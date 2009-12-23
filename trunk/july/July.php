@@ -33,6 +33,7 @@ class July {
         $this->router = new Router();
     }
     public function run() {
+        $this->router->parse();
         $route = $this->router->route();
         if (isset($route['controler']) && isset($route['method'])) {
             $c = new $route['controler']();
