@@ -1,1 +1,0 @@
-<?php//mysql database addressdefine('DB_HOST','localhost');//mysql database userdefine('DB_USER','root');//database passworddefine('DB_PWD','root');//database namedefine('DB_NAME','dream');define('DB_PREFIX','')?>
