@@ -41,9 +41,15 @@ class Cache {
             }
         }
     }
-    public function touch($name) {
-        if (!touch($name)) {
-            throw new Exception("touch $name failed\n");
+    public function touch($name,$time = null) {
+        if ($time === null) {
+            if (!touch($name)) {
+                throw new Exception("touch $name failed\n");
+            }
+        }else {
+            if (!touch($name,$time)) {
+                throw new Exception("touch $name at $time failed\n");
+            }
         }
     }
 }
