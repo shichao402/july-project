@@ -1,6 +1,10 @@
 <?php
 class Cache {
     private $dir;
+    /**
+     *  new cache object,set a dirctory to cache file.
+     * @param dir_path_string $baseDir
+     */
     public function __construct($baseDir) {
         if (!is_dir($baseDir)) {
             throw new Exception("$dir is not an effect Dir\n");
@@ -8,6 +12,14 @@ class Cache {
             $this->dir = realpath($baseDir);
         }
     }
+    /**
+     *  set $value to a cache file named $name,
+     * if file not exists,try to create.
+     * if exists,overwrite and touch it.
+     * @param string $name
+     * @param mixed $value
+     * @param int $expire second,0 means never expired
+     */
     public function set($name,$value,$expire = 0) {
         $file = $this->dir.'/'.$name.'.cache.php';
         $value = serialize($value);
@@ -23,6 +35,11 @@ class Cache {
             throw new Exception("nothing write to $file\n");
         }
     }
+    /**
+     *  get the cache data from cache named $name
+     * @param sting $name the name of cache
+     * @return mixed the cache data
+     */
     public function get($name) {
         $file = $this->dir.'/'.$name.'.cache.php';
         if (($contents = @file_get_contents($file)) === false) {
@@ -41,6 +58,11 @@ class Cache {
             }
         }
     }
+    /**
+     *  touch a file,modify the createtime modifytime and actiontime
+     * @param string $name filepath
+     * @param int $time timestamp
+     */
     public function touch($name,$time = null) {
         if ($time === null) {
             if (!touch($name)) {

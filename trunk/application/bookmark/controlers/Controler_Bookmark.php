@@ -19,7 +19,7 @@ class Controler_bookmark extends Controller {
                 $bookmarkList->totalPage = $bookmark->totalPage(PAGE_LENGTH);
                 $cache->set('bookmark_tag_list',array($bookmarkList->page,$bookmarkList->totalPage),5);
                 $tag = new Tag();
-                $tagList = new Viewer(new DataProvider(new DataProvider($tag->tagsInId($bookmark->idArray())), $bookmarkList->id));
+                $tagList = new Viewer(new DataProvider(new DataProvider($tag->tagsInId($bookmark->idArray())), $bookmarkList->refer('id')));
                 $cache->set('bookmark_tag_list_'.$page,array($bookmarkList,$tagList),5);
             }
         }

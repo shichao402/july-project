@@ -2,9 +2,15 @@
 class User {
     private $data = array();
     private $token;
+    private $db;
     public function __construct() {
         $this->db = July::instance('db');
     }
+    /**
+     *  authenticate by token
+     * @param string $encryptedToken
+     * @return boolean
+     */
     public function authenticate($encryptedToken) {
         if (!empty($token)) {
             list($userId,$token) = explode('_', $encryptedToken);
@@ -21,6 +27,11 @@ class User {
             throw new Exception("token is not effect\n");
         }
     }
+    /**
+     *  login use account and password,and save token.if not, throw exception
+     * @param string $account
+     * @param string $password
+     */
     public function login($account,$password) {
         if (empty($account) || empty($password)) {
             throw new Exception("account or password is empty\n");
@@ -34,34 +45,65 @@ class User {
             throw new Exception("wrong password\n");
         }
     }
+    /**
+     *  cookie current user's token
+     * @param int $expire expire second
+     * @param string $path effect path
+     */
     public function remember($expire,$path) {
-        setcookie('token', $this->id.'_'.$this->token, $expire, $path, $_SERVER['HTTP_HOST']);
+        setcookie('token', $this->data['id'].'_'.$this->token, $expire, $path, $_SERVER['HTTP_HOST']);
     }
+    /**
+     *  get current user's token
+     * @return string
+     */
     public function token() {
         return $this->data['id'].'_'.$this->token;
     }
+    /**
+     *  register a new user
+     * @param array $data associate array,field must effect in db.
+     */
     public function register($data) {
         $queryString = "INSERT INTO user (".implode(array_keys($data), ',').") VALUES (".implode($data, ',').")";
         if (!$this->db->insert($queryString)) {
             throw new Exception("user information insert failed\n");
         }
     }
+    /**
+     *  delete a user by id
+     * @param int $id
+     */
     public function delete($id) {
         $queryString = "DELETE FROM user WHERE id = {$id}";
         if (!$this->db->delete($queryString)) {
             throw new Exception("user delete failed\n");
         }
     }
-    public function infomation() {
+    /**
+     *  get user's infomation
+     * @param int $id
+     * @return array associate array
+     */
+    public function infomation($id) {
         if (empty($this->data)) {
-            throw new Exception("user information is empty\n");
+            $queryString = "SELECT * FROM user WHERE id=".$id;
+            $user = $this->db->selectFirst($queryString, true);
+            return $user;
         }else {
             return $this->data;
         }
     }
-    public function changePassword($oldPassword,$newPassword) {
+    /**
+     *  change user's passowrd
+     * @param int $id
+     * @param string $oldPassword
+     * @param string $newPassword
+     * @return boolean
+     */
+    public function changePassword($id,$oldPassword,$newPassword) {
         if ($oldPassword == $this->user['password']) {
-            $queryString = "UPDATE user SET password = {$newPassword} WHERE id = {$this->user['id']}";
+            $queryString = "UPDATE user SET password = {$newPassword} WHERE id = {$id}";
             if ($this->db->update($queryString)) {
                 return true;
             }else {
@@ -71,13 +113,18 @@ class User {
             return false;
         }
     }
-    public function modifyInfomation($newData) {
+    /**
+     *  modify user's infomation
+     * @param array $newData keys must effect in db
+     */
+    public function modifyInfomation($id,$newData) {
         $updateString = "UPDATE user SET ";
         if (!empty($newData)) {
             foreach ($newData as $key => $value) {
                 $updateString .= $key.' = '.$value.',';
             }
             $updateString = substr($updateString, 0, -1);
+            $updateString .= "WHERE id = {$id}";
             if (!$this->db->update($updateString)) {
                 throw new Exception("modify is not null\n");
             }

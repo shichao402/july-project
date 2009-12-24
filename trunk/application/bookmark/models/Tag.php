@@ -1,10 +1,18 @@
 <?php
 class Tag {
     private $db;
+    /**
+     * create tag
+     */
     public function __construct() {
         $this->july = July::instance();
         $this->db = $this->july->db;
     }
+    /**
+     *  get tagslist by $idArray
+     * @param array $idArray array of id,id is tag relation
+     * @return taglist
+     */
     public function tagsInId($idArray) {
         $idString = implode(",", $idArray);
         $queryString = "

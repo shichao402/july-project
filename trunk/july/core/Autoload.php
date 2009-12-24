@@ -1,10 +1,25 @@
 <?php
 class Autoload {
+    /**
+     *  folder path,use to build index.
+     * @var array
+     */
     private $folder = array();
+    /**
+     *  path index,use to get class filepath
+     * @var array
+     */
     private $pathIndex = array();
+    /**
+     * create autoload
+     */
     public function __construct() {
         spl_autoload_register(array($this,'load'));
     }
+    /**
+     *  set a array as autoload classfile path index
+     * @param array $index
+     */
     public function setIndex($index) {
         if (empty($index)) {
             throw new Exception("indexArray is empty\n");
@@ -12,6 +27,9 @@ class Autoload {
             $this->pathIndex = $index;
         }
     }
+    /**
+     * get all files' name and path in the folder set,store the name and path as array
+     */
     public function buildIndex() {
         if (empty($this->folder)) {
             throw new Exception("you need add pathfolder at least one\n");
@@ -32,6 +50,10 @@ class Autoload {
             }
         }
     }
+    /**
+     *  add a path want to build index
+     * @param path string $pathArray
+     */
     public function addPath($pathArray) {
         if (empty($pathArray)) {
             throw new Exception("pathArray is empty\n");
@@ -47,6 +69,12 @@ class Autoload {
             }
         }
     }
+    /**
+     *  magic method.registered in __construct.
+     *  use classname to find classpath in pathindex use the key.\n
+     * if not,this method will rebuild the pathindex use the folder set in config file,\n
+     * and try to find path again or thrown an exception.
+     */
     private function load($className) {
         if (isset($this->pathIndex[$className])) {
             require($this->pathIndex[$className]);

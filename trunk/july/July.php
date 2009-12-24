@@ -4,7 +4,12 @@ class July {
     public $autoload;
     public $router;
     public $cache;
-    static public $instance; 
+    static public $instance;
+    /**
+     *  create or get instance
+     * @param string $name
+     * @return July::Object
+     */
     static public function instance($name = null) {
         if ($name === null) {
             if (self::$instance == null) {
@@ -32,6 +37,9 @@ class July {
         $this->autoload = new Autoload();
         $this->router = new Router();
     }
+    /**
+     * parse route ,load and execute controler
+     */
     public function run() {
         $this->router->parse();
         $route = $this->router->route();
@@ -42,7 +50,5 @@ class July {
             throw new Exception("route is not effective\n");
         }
         }
-    public function __destruct() {
-    }
 }
 ?>
