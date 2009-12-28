@@ -36,6 +36,7 @@ abstract class Controller {
         foreach ($this->view as $__view) {
             include($__view);
         }
+        $this->view = array();
     }
     /**
      *  load views file path by views name.
@@ -47,6 +48,10 @@ abstract class Controller {
         }else {
             throw new Exception("can not find views file.\n");
         }
+    }
+    public function redirect($controler,$method,$referrer = null,$param = null) {
+        $referrer = $referre === null ? null : '&referrer=$referrer';
+        header("location: http://".$_SERVER['HTTP_HOST'].APP_PATH."/index.php?c={$controler}&m={$method}{$param}{$referrer}");
     }
 }
 

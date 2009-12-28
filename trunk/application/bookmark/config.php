@@ -1,7 +1,7 @@
 <?php
 define('APP_CONFIG',dirname(__FILE__).'/config');
 define('APP_ROOT',dirname(__FILE__));
-define('APP_URL',dirname($_SERVER['SCRIPT_NAME']));
+define('APP_PATH',dirname($_SERVER['SCRIPT_NAME']));
 $self = basename(__FILE__);
 if (false !== ($handle = opendir(APP_CONFIG))) {
     while (false !== ($fileName = readdir($handle))) {

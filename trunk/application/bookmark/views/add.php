@@ -10,6 +10,6 @@
             <input type="text" name="url" value="" size="200" />
             <textarea name="intro" rows="4" cols="20"></textarea>
             <input type="submit" value="提交" />
-</form>
+        </form>
     </body>
 </html>

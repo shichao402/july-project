@@ -1,6 +1,9 @@
 <?php
 class Controler_bookmark extends Controller {
     public function index() {
+        $authenticate = new Controler_Authenticate();
+        $authenticate->authenticate();
+        
         $page = empty($_GET['p']) ? 1 : $_GET['p'];
         $cache = new Cache(APP_ROOT.'/cache');
         try {
@@ -39,6 +42,9 @@ class Controler_bookmark extends Controller {
         $this->view();
     }
     public function post() {
+        $authenticate = new Controler_Authenticate();
+        $authenticate->authenticate();
+        
         $input = $_POST;
         $bookmark = new BookMark();
         if ($bookmark->saveFromForm($input)) {
@@ -49,6 +55,9 @@ class Controler_bookmark extends Controller {
         $this->view();
     }
     public function startSearch() {
+        $authenticate = new Controler_Authenticate();
+        $authenticate->authenticate();
+        
         $filed = $_GET['f'];
         $keywords = $_GET['key'];
         $page = empty($_GET['p']) ? 1 : $_GET['p'];
@@ -82,13 +91,22 @@ class Controler_bookmark extends Controller {
         $this->view();
     }
     public function search() {
+        $authenticate = new Controler_Authenticate();
+        $authenticate->authenticate();
+        
         $this->loadView('search');
         $this->view();
     }
     public function add() {
+        $authenticate = new Controler_Authenticate();
+        $authenticate->authenticate();
+        
         $this->loadView('add');
     }
     public function del() {
+        $authenticate = new Controler_Authenticate();
+        $authenticate->authenticate();
+        
         $id = $_GET['id'];
         $bookmark = new BookMark();
         if ($bookmark->delete($id)) {
