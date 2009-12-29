@@ -64,37 +64,32 @@ class Autoload {
                 if (is_dir($path)) {
                     $this->folder[] = realpath($path);
                 } else {
-                    throw new Exception("{$path} is not an effect dir\n");
+                    throw new FileSystemException("{$path} is not an effect dir\n");
                 }
             }
         }
     }
     /**
      *  magic method.registered in __construct.
-     *  use classname to find classpath in pathindex use the key.\n
-     * if not,this method will rebuild the pathindex use the folder set in config file,\n
+     *  use classname to find classpath in pathindex use the key.
+     * if not,this method will throw an exception
      * and try to find path again or thrown an exception.
      */
     private function load($className) {
         if (isset($this->pathIndex[$className])) {
             require($this->pathIndex[$className]);
         }else {
-            $cache = July::instance('cache');
-            require APP_ROOT.'/config/autoload.php';
-            $this->addPath($folder);
-            try {
-                $this->buildIndex();
-                $cache->set('autoload_index',$this->pathIndex);
-            } catch (Exception $e) {
-                echo $e->getMessage();
-            }
-            if (isset($this->pathIndex[$className])) {
-                require($this->pathIndex[$className]);
-            }else {
-                eval("class $className {};");
-                throw new Exception("$className can not be found\n");
-            }
+            eval("class $className {};");
+            throw new ClassException("$className can not be found\n");
         }
     }
+    /**
+     * return an array,include class name and classfilepath
+     * @return array
+     */
+    public function getPathIndex() {
+        return $this->pathIndex;
+    }
+
 }
 ?>

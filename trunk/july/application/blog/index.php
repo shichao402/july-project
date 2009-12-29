@@ -10,6 +10,14 @@ try {
     $july->run();
 } catch (FileSystemException $e) {
     echo $e->getMessage();
+    try {
+        $this->addPath($folder);
+        $this->buildIndex();
+        $cache->set('autoload_index',$this->pathIndex);
+    } catch (FileSystemException $e) {
+        echo $e->getMessage();
+        echo "try to rebuildindex\n";
+    }
 } catch (Exception $e) {
     echo $e->getMessage();
 }

@@ -1,5 +1,5 @@
 <?php
-abstract class Controller {
+abstract class Controler {
     /**
      * views file name
      * @var array 

@@ -5,14 +5,24 @@ require('/var/www/july/july/July.php');
 require './config.php';
 try {
     $july = July::instance();
-    $july->autoload->setIndex($july->cache->get('autoload_index'));
+    $cache = new Cache(APP_ROOT.'/cache');
+    $july->autoload->setIndex($cache->get('autoload_index'));
     $july->db = new DB(DB_HOST, DB_USER, DB_PWD, DB_NAME);
     $july->router->setDefaultRoute($default_route);
     $july->run();
-}catch (Exception $e) {
+} catch (FileSystemException $e) {
+    echo $e->getMessage();
+    echo "try to rebuildindex\n";
+    try {
+        $july->autoload->addPath($folder);
+        $july->autoload->buildIndex();
+        $cache->set('autoload_index',$july->autoload->getPathIndex());
+    } catch (FileSystemException $e) {
+        echo $e->getMessage();
+    }
+} catch (Exception $e) {
     echo $e->getMessage();
 }
-
 $xhprof_data = xhprof_disable();
 $XHPROF_ROOT = '/var/www/xhprof';
 include_once $XHPROF_ROOT . "/xhprof_lib/utils/xhprof_lib.php";
