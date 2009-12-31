@@ -68,9 +68,8 @@ class DB {
         $this->queryCount++;
         try {
             $result = $this->fetchArray($resource,$resultType);
-        }
-        catch(Exception $e) {
-            throw new Exception("assert at lest one result,but not.\n");
+        } catch(Exception $e) {
+            throw new DBException("assert at lest one result,but not.\n");
         }
         return $result;
     }
@@ -103,9 +102,8 @@ class DB {
         $this->queryString[] = $queryString;
         $resource = mysql_query($queryString,$this->connection);
         if ($resource === false) {
-            throw new Exception("Query String has Error: ".$queryString);
-        }
-        else {
+            throw new DBException("Query String has Error: ".$queryString);
+        } else {
             return $resource;
         }
     }
@@ -153,8 +151,7 @@ class DB {
         $result = mysql_fetch_array($resource,$resultType);
         if ($result === false) {
             throw new Exception("no more rows to fetch\n");
-        }
-        else {
+        } else {
             return $result;
         }
     }

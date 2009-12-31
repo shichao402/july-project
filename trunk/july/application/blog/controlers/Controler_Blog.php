@@ -5,6 +5,7 @@ class Controler_Blog extends Controler {
         try {
             $cache = new Cache(APP_ROOT.'/cache/article/');
             $renderData = $cache->get('article_tag_categroy_'.$page);
+            $miscData = $cache->get('misc');
         } catch (FileSystemException $e) {
             echo $e->getMessage();
             $cache->touch('article_tag_categroy_'.$page);
@@ -13,10 +14,11 @@ class Controler_Blog extends Controler {
             $category = new Tag();
             $articleList = new Viewer(
                     new DataProvider(
-                        $article->articleList($page,PAGE_LENGTH)
+                        $articleListResult = $article->articleList($page,PAGE_LENGTH)
                     )
             );
-            $idArray = $article->idArray();
+            $totalPage = $article->totalPage($article->totalNum(), PAGE_LENGTH);
+            $idArray = $article->splitArray(array('id'),$articleListResult);
             $tagList = new Viewer(
                     new DataProvider(
                         new DataProvider(
@@ -36,16 +38,18 @@ class Controler_Blog extends Controler {
             $renderData = array(
                 'article' => $articleList,
                 'tag' => $tagList,
-                'category' => $categoryList
+                'category' => $categoryList,
+                'page' => $page,
+                'commentNum' => $commentNum,
+            );
+            $miscData = array(
+                'totalPage' => $totalPage,
             );
             $cache->set('article_tag_categroy_'.$page,$renderData);
         }
         $this->render($renderData);
-        if ($articleList->have()) {
-            $this->loadView('articleList');
-        } else {
-            $this->loadView('nothing');
-        }
+        $this->render($miscData);
+        $this->loadView('articleList');
         $this->view();
     }
 }

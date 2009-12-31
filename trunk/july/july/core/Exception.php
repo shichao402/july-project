@@ -1,9 +1,9 @@
 <?php
 class FileSystemException extends Exception {
-    
+
 }
 class DBException extends Exception {
-    
+
 }
 class UserException extends Exception {
     private $type;
@@ -14,5 +14,8 @@ class UserException extends Exception {
     public function getType() {
         return $this->type;
     }
+}
+class ModelException extends Exception {
+
 }
 ?>
