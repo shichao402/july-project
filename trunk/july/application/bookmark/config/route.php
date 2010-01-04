@@ -1,6 +1,6 @@
 <?php
 $default_route =  array(
-        'controler' => 'Controler_Bookmark',
+        'controller' => 'Controller_Bookmark',
         'method' => 'index'
 );
 ?>
