@@ -13,7 +13,7 @@ class Router {
     public function setPreloadRoute($preloadArray) {
         if (!is_array($preloadArray)) {
             throw new Exception("the preload is not an Array\n");
-        }elseif (empty($preloadArray['controler']) || empty($preloadArray['method'])) {
+        }elseif (empty($preloadArray['controller']) || empty($preloadArray['method'])) {
             throw new Exception("the preload is not an effect Array");
         }else {
             $this->preloadRoute[] = $preloadArray;
@@ -32,7 +32,7 @@ class Router {
      * @param array $defaultArray
      */
     public function setDefaultRoute($defaultArray) {
-        if (isset($defaultArray['controler']) && isset($defaultArray['method'])) {
+        if (isset($defaultArray['controller']) && isset($defaultArray['method'])) {
             $this->route = $defaultArray;
         }else {
             throw new Exception("default route array is not effective\n");
@@ -50,7 +50,7 @@ class Router {
      */
     public function parse() {
         if (!empty($_GET['c'])) {
-            $this->route['controler'] = $_GET['c'];
+            $this->route['controller'] = $_GET['c'];
             unset($_GET['c']);
         }
         if (!empty($_GET['m'])) {

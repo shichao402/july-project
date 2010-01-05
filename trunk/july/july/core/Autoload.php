@@ -80,7 +80,7 @@ class Autoload {
             require($this->pathIndex[$className]);
         }else {
             eval("class $className {};");
-            throw new ClassException("$className can not be found\n");
+            throw new Exception("$className can not be found\n");
         }
     }
     /**

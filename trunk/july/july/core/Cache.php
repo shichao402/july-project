@@ -12,6 +12,13 @@ class Cache {
             $this->dir = realpath($baseDir);
         }
     }
+    public function workDir($dir) {
+        if (!is_dir($baseDir)) {
+            throw new FileSystemException("$dir is not an effect Dir\n");
+        } else {
+            $this->dir = realpath($baseDir);
+        }
+    }
     /**
      *  set $value to a cache file named $name,
      * if file not exists,try to create.

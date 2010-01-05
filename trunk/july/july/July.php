@@ -31,10 +31,11 @@ class July {
         require_once(JULY_ROOT.'/core/DataProvider.php');
         require_once(JULY_ROOT.'/core/Autoload.php');
         require_once(JULY_ROOT.'/core/Router.php');
-        require_once(JULY_ROOT.'/core/Controler.php');
+        require_once(JULY_ROOT.'/core/Controller.php');
         require_once JULY_ROOT.'/core/Exception.php';
         $this->autoload = new Autoload();
         $this->router = new Router();
+        $this->cache = new Cache(APP_ROOT.'/cache');
     }
     /**
      * parse route ,load and execute controler
@@ -42,8 +43,8 @@ class July {
     public function run() {
         $this->router->parse();
         $route = $this->router->route();
-        if (isset($route['controler']) && isset($route['method'])) {
-            $c = new $route['controler']();
+        if (isset($route['controller']) && isset($route['method'])) {
+            $c = new $route['controller']();
             $c->$route['method']();
         }else {
             throw new Exception("route is not effective\n");
