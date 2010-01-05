@@ -1,6 +1,6 @@
 <?php
 $default_route =  array(
-        'controler' => 'Controler_Blog',
+        'controller' => 'Controller_Blog',
         'method' => 'index'
 );
 ?>

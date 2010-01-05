@@ -16,7 +16,7 @@ try {
         $cache->set('autoload_index',$this->pathIndex);
     } catch (FileSystemException $e) {
         echo $e->getMessage();
-        echo "try to rebuildindex\n";
+        echo "try to delete cache files and rebuildindex manually\n";
     }
 } catch (Exception $e) {
     echo $e->getMessage();

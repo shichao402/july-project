@@ -1,8 +1,9 @@
 <?php
 class Article {
-    private $SQL_CALC_FOUND_ROWS = false;
+    private $totalNum = null;
     public function  __construct() {
         $this->db = July::instance('db');
+        $this->cache = July::instance('cache');
     }
     /**
      *  获取文章列表,在这个对象里面暂存文章id列表,计算文章总数量
@@ -11,6 +12,7 @@ class Article {
      * @return array    文章列表
      */
     public function articleList($page,$pageLength) {
+        $cacheName = __CLASS__.'_'.__METHOD__.implode('_',func_get_args());
         $queryField = array(
                 'id',
                 'title',
@@ -23,13 +25,28 @@ class Article {
                 'publish',
                 'commentnum'
         );
-        $queryString = 'SELECT SQL_CALC_FOUND_ROWS '.implode(',',$queryField).' from post';
-        $queryString .= ' LEFT JOIN author ON author.author_id = post.post_author';
-        $queryString .= ' WHERE post.post_publish = 1';
-        $queryString .= ' ORDER BY post.post_date DESC';
-        $queryString .= ' LIMIT '.$pageLength*($page-1).','.$pageLength;
-        $result = $this->db->selectAsArray($queryString);
-        $this->SQL_CALC_FOUND_ROWS = true;
+        try {
+            $result = $this->cache->get($cacheName);
+            $this->totalNum = $this->cache->get(__CLASS__.'_'.__METHOD__.'_totalNum');
+        } catch (FileSystemException $e) {
+            echo $e->getTraceAsString();
+
+            $this->cache->touch($cacheName);
+            $this->cache->touch(__CLASS__.'_'.__METHOD__.'_totalNum');
+
+            $queryString = 'SELECT SQL_CALC_FOUND_ROWS '.implode(',',$queryField).' from article';
+            $queryString .= ' LEFT JOIN user ON user.id = article.author';
+            $queryString .= ' WHERE article.publish = 1';
+            $queryString .= ' ORDER BY article.date DESC';
+            $queryString .= ' LIMIT '.$pageLength*($page-1).','.$pageLength;
+            $result = $this->db->selectAsArray($queryString);
+
+            $totalNum = $this->db->selectFirst("SELECT FOUND_ROWS() as totalnum",true);
+            $this->totalNum = $totalNum['totalnum'];
+
+            $this->cache->set($cacheName,$result);
+            $this->cache->set(__CLASS__.'_'.__METHOD__.'_totalNum',$this->totalNum);
+        }
         return $result;
     }
     /**
@@ -64,21 +81,35 @@ class Article {
      * @return int
      */
     public function totalNum() {
-        if ($this->SQL_CALC_FOUND_ROWS === true) {
-            $result = $this->db->selectFirst("SELECT FOUND_ROWS() as totalnum",true);
-            $this->SQL_CALC_FOUND_ROWS = true;
-            return (int) $result['totalnum'];
-        }else {
-            throw new Exception("the last sqlquery seems didnt have SQL_CALC_FOUND_ROWS\n");
+        if ($this->totalNum === null) {
+            throw new Exception("no SQL_CALC_FOUND_ROWS executed\n");
+        } else {
+            return $this->totalNum;
         }
     }
-    public function post($data) {
+    public function getArticleById($id) {
+        $cacheName = __CLASS__.'_'.__METHOD__.'_'.$id;
+        try {
+            $result = $this->cache->get($cacheName);
+        } catch (FileSystemException $e) {
+            echo $e->getTraceAsString();
+            $this->cache->touch($cacheName);
+            $queryString = 'SELECT * FROM article';
+            $queryString .= ' LEFT JOIN user ON user.id = article.author';
+            $queryString .= ' WHERE article.publish = 1 AND article.id = \''.$postId.'\'';
+            $queryString .= ' LIMIT 0,1';
+            $result = $this->db->selectFirst($queryString,true);
+            $this->cache->set($cacheName,$result);
+        }
+        return $result;
+    }
+    public function getArticleByTag($tagId) {
         
     }
-    public function delete($id) {
+    public function searchArticle($keywords) {
         
     }
-    public function update($id) {
+    public function newArticle($data) {
         
     }
 }
