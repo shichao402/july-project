@@ -13,18 +13,6 @@ class Article {
      */
     public function articleList($page,$pageLength) {
         $cacheName = __CLASS__.'_'.__METHOD__.implode('_',func_get_args());
-        $queryField = array(
-                'id',
-                'title',
-                'slug',
-                'intro',
-                'content',
-                'date',
-                'author',
-                'allowcomment',
-                'publish',
-                'commentnum'
-        );
         try {
             $result = $this->cache->get($cacheName);
             $this->totalNum = $this->cache->get(__CLASS__.'_'.__METHOD__.'_totalNum');
@@ -34,7 +22,7 @@ class Article {
             $this->cache->touch($cacheName);
             $this->cache->touch(__CLASS__.'_'.__METHOD__.'_totalNum');
 
-            $queryString = 'SELECT SQL_CALC_FOUND_ROWS '.implode(',',$queryField).' from article';
+            $queryString = 'SELECT SQL_CALC_FOUND_ROWS * from article';
             $queryString .= ' LEFT JOIN user ON user.id = article.author';
             $queryString .= ' WHERE article.publish = 1';
             $queryString .= ' ORDER BY article.date DESC';
@@ -110,7 +98,13 @@ class Article {
         
     }
     public function newArticle($data) {
-        
+        $queryString = "INSERT INTO article(".implode(",",array_keys($data)).") VALUES ('".implode("','",$data)."')";
+        $affectedNum = $this->db->insert($queryString);
+        if ($affectedNum > 0) {
+            return $affectedNum;
+        } else {
+            throw new ModelException("no article added\n");
+        }
     }
 }
 ?>

@@ -21,10 +21,10 @@ class DB {
         $this->connection = mysql_connect($this->host, $this->user, $this->pass);
         if ($this->connection === false) {
             $this->connection = null;
-            throw new Exception("can not connect to mysql.\n");
+            throw new DBException("can not connect to mysql.\n");
         } else {
             if (!mysql_select_db($this->name, $this->connection)) {
-                throw new Exception("can not use database {$dbName}.\n");
+                throw new DBException("can not use database {$dbName}.\n");
             } else {
                 if ((float) substr(mysql_get_server_info($this->connection),0,3) > 4.1) {
                     $this->query("SET NAMES 'utf8'");
@@ -42,17 +42,16 @@ class DB {
             if ((float) substr(mysql_get_server_info($this->connection),0,3) > 4.1) {
                 $this->query("SET NAMES 'utf8'");
             }
-        }
-        else {
-            throw new Exception("can not use database {$dbName}.\n");
+        } else {
+            throw new DBException("can not use database.\n database name: {$dbName}.\n");
         }
     }
     /**
      * close connection
      */
     public function close() {
-        if (mysql_close($this->connection)) {
-            throw new Exception("can not close connection\n");
+        if (!mysql_close($this->connection)) {
+            throw new DBException("can not close connection\n");
         }
     }
     /**
@@ -66,12 +65,12 @@ class DB {
     public function selectFirst($queryString,$assert = false,$resultType = null) {
         $resource = $this->query($queryString);
         $this->queryCount++;
-        try {
-            $result = $this->fetchArray($resource,$resultType);
-        } catch(Exception $e) {
+        $result = $this->fetchArray($resource,$resultType);
+        if ($result === false) {
             throw new DBException("assert at lest one result,but not.\n");
+        } else {
+            return $result;
         }
-        return $result;
     }
     /**
      *  select rows as array
@@ -83,12 +82,9 @@ class DB {
     public function selectAsArray($queryString, $resultType = null) {
         $resource = $this->query($queryString);
         $array = array();
-        $resultType = $resultType === null ? $this->defaultResultType : $resultType;
         $this->queryCount++;
-        $temp = mysql_fetch_array($resource,$resultType);
-        while($temp !== false) {
+        while(($temp = $this->fetchArray($resource,$resultType)) !== false) {
             $array[] = $temp;
-            $temp = mysql_fetch_array($resource,$resultType);
         }
         return $array;
     }
@@ -102,7 +98,7 @@ class DB {
         $this->queryString[] = $queryString;
         $resource = mysql_query($queryString,$this->connection);
         if ($resource === false) {
-            throw new DBException("Query String has Error: ".$queryString);
+            throw new DBException(mysql_error($this->connection),mysql_errno($this->connection));
         } else {
             return $resource;
         }
@@ -150,7 +146,7 @@ class DB {
         $resultType = $resultType === null ? $this->defaultResultType : $resultType;
         $result = mysql_fetch_array($resource,$resultType);
         if ($result === false) {
-            throw new Exception("no more rows to fetch\n");
+            return false;
         } else {
             return $result;
         }
@@ -171,9 +167,8 @@ class DB {
     public function countAffectedRows() {
         $result = mysql_affected_rows($this->connection);
         if ($result === -1) {
-            throw new Exception("query affectedRows failed;\n");
-        }
-        else {
+            throw new DBException("query affectedRows failed;\n");
+        } else {
             return $result;
         }
     }
@@ -191,9 +186,8 @@ class DB {
     public function lastInsertId() {
         $result = mysql_insert_id($this->connection);
         if ($result === 0) {
-            throw new Exception("no increament id produced.\n");
-        }
-        else {
+            throw new DBException("no increament id produced.\n");
+        } else {
             return $result;
         }
     }

@@ -67,8 +67,22 @@ class Comment {
                 $result = $this->db->delete($queryString);
                 throw new UserException("add comment failure\n");
             }
-        }else {
+        } else {
             throw new UserException("can not insert\n");
+        }
+    }
+    public function deleteComment($id) {
+        $queryString = "SELECT relate_id FROM comment WHERE id = {$id}";
+        $data = $this->db->selectFirst($queryString);
+
+        $queryString = "DELETE FROM comment WHERE id = {$id}";
+        if ($this->db->delete($queryString) <= 0) {
+            throw new UserException("delete comment failure\n");
+        }
+
+        $queryString = "UPDATE article SET `commentnum` = commentnum-1 WHERE id = ".$data['relate_id'];
+        if ($this->db->update($queryString) <= 0) {
+            throw new UserException("update article comment number failure\n");
         }
     }
 }
