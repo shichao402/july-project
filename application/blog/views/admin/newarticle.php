@@ -1,0 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>newarticle</title>
+    </head>
+    <body>
+        <form action="<?php echo $_SERVER['SCRIPT_FILE'].'?c=Controller_CP&m=newarticle&submit';?>" method="POST">
+            <input type="text" name="title" value="" size="200" />
+            <input type="text" name="slug" value="" size="200" />
+            <input type="text" name="date" value="<?php echo date("Y-m-d H:i:s");?>" size="200" />
+            <input type="text" name="author" value="admin" size="200" />
+            <input type="text" name="allow_comment" value="1" size="200" />
+            <input type="text" name="publish" value="1" size="200" />
+            <textarea name="intro" rows="4" cols="20"></textarea>
+            <textarea name="content" rows="4" cols="20"></textarea>
+            <input type="submit" value="提交" />
+        </form>
+    </body>
+</html>
